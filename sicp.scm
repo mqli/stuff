@@ -120,3 +120,29 @@
                    1
                    (* 2 (+ 1 (quotient i 3))))))
            10)
+
+(define (inc x) (+ x 1))
+;1.4.1
+(define (double fn)
+  (lambda (x) (fn (fn x))))
+
+
+;1.4.2
+(define (compose f g)
+  (lambda (x)
+    (f (g x))))
+;((compose square inc) 6)
+
+;1.43
+(define (repeat f n)
+  (if (= n 1) f
+      (compose f (repeat f (- n 1)))))
+;((repeat square 2) 5)
+
+;1.4.4
+(define (smooth f) 
+  (define dx 0.0000001)
+  (lambda (x) (/(+ (f x)
+                   (f(+ x dx))
+                   (f(- x dx)))
+               3)))
