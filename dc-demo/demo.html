@@ -94,20 +94,26 @@
         var TableView = Backbone.View.extend({
           tagName: 'div',
           events: {
-            'click a.sub-table': 'subTable'
+            'click a.sub-table': 'subTable',
+            'click a.toggle-table': 'toggleTable'
           },
           initialize: function () {
             this.template = _.template($('#table-view').text());
           },
           subTable: function (event) {
             var subTable = MOCK[$(event.target).attr('subTable')];
-            $(event.target).removeClass('sub-table');
             new TableView({
               model: new Backbone.Model({
                 clumns: subTable.clumns,
                 records: subTable.records
               })
-            }).render().$el.wrap('<tr><td colspan='+this.model.get('clumns').length+'>').parents('tr').insertAfter($(event.target).parent().parent());
+            }).render().$el.wrap('<tr class="subtable"><td colspan='+this.model.get('clumns').length+'>').parents('tr').insertAfter($(event.target).parent().parent());
+            $(event.target).removeClass('sub-table').addClass('toggle-table');
+            event.stopPropagation();
+          },
+          toggleTable: function (event) {
+            event.stopPropagation();
+            $(event.target).parent().parent().next('tr.subtable').toggle();
           },
           render: function () {
             this.$el.html(this.template(this.model.toJSON()));
