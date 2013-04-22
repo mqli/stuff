@@ -13,34 +13,42 @@
         <div class="navbar-inner">
           <div class="container-fluid">
             <a class="brand" href="#">DC DEMO</a>
-            <ul class="nav">
-              <%_.forEach(menus, function (menu) {%>
-                <%if (_.isArray(menu.menus) && menu.menus.length > 0) {%>
-                  <li class="dropdown">
-                    <a class="dropdown-toggle" id="<%=menu.id%>" href="###"><%=menu.text%>
-                      <b class="caret"></b>
-                    </a>
-                    <ul class="dropdown-menu">
-                      <%_.forEach(menu.menus, function (menu) {%>
-                        <li><a class="menu" id="<%=menu.id%>" href="###"><%=menu.text%></a></li>
-                      <%})%>
-                    </ul>
-                  </li>
-                <%} else {%>
-                <li class=""><a class="menu" id="<%=menu.id%>" href="###"><%=menu.text%></a></li>
-              <%}})%>
-            </ul>
           </div>
         </div>
       </div>
-      <div id="report" class="container-fluid">
-        <div id="chart-container" class="row-fluid"></div>
+      <div  class="row-fluid">
+        <div id="" class="span2">
+          <ul class="nav nav-tabs nav-stacked">
+            <%_.forEach(menus, function (menu) {%>
+              <%if (_.isArray(menu.menus) && menu.menus.length > 0) {%>
+                <li class="">
+                  <a class="" id="<%=menu.id%>" href="###"><%=menu.text%></a>
+                  <ul class="nav nav-tabs nav-stacked">
+                    <%_.forEach(menu.menus, function (menu) {%>
+                      <li><a class="menu" id="<%=menu.id%>" reportid="<%=menu.id%>" href="###"><%=menu.text%></a></li>
+                    <%})%>
+                  </ul>
+                </li>
+              <%} else {%>
+              <li class=""><a class="menu" id="<%=menu.id%>" reportid="<%=menu.id%>" href="###"><%=menu.text%></a></li>
+            <%}})%>
+          </ul>
+        </div>
+        <div id="" class="span10">
+          <div id="tab-container" class="row-fluid">
+            <ul class="nav nav-tabs">
+              
+            </ul>
+          </div>
+          <div id="report" class="row-fluid">
+          </div>
+        </div>
       </div>
     </script>
     <script id="report-view" type="text/template">
+      <div id="filter-container" class="row-fluid form-inline"></div>
       <div class="row-fluid">
-        <div id="filter-container" class="span2 row-fluid"></div>
-        <div class="span10">
+        <div class="span12">
           <div id="chart-container" class="row-fluid"></div>
           <div id="table-container" class="row-fluid"></div>
         </div>
@@ -51,7 +59,15 @@
         <thead>
           <tr>
             <%_.forEach(clumns, function (clumn) {%>
-              <th><%=clumn.text%></th>
+              <th>
+                <%=clumn.text%>
+                <%if (!_.isEmpty(clumn.tip)) {%>
+                  <a href="###" data-placement="bottom" data-title="<%=clumn.text%>" data-content="<%=clumn.tip%>" class="tip icon-question-sign pull-right"></a>
+                <%}%>
+                <%if (clumn.sortable) {%>
+                  <a href="###" sortBy="<%=clumn.key%>" class="sortable icon-arrow-up pull-right"></a>
+                <%}%>
+              </th>
             <%})%>
           </tr>
         </thead>
@@ -86,7 +102,7 @@
       </label>
     </script>
     <script id="chart-view" type="text/template">
-      <div class="chart-container"></div>
+      <div class="chart-container span12"></div>
     </script>
     <script type="text/javascript" src="MOCK.js"></script>
     <script type="text/javascript">
@@ -95,7 +111,8 @@
           tagName: 'div',
           events: {
             'click a.sub-table': 'subTable',
-            'click a.toggle-table': 'toggleTable'
+            'click a.toggle-table': 'toggleTable',
+            'click a.sortable': 'sort'
           },
           initialize: function () {
             this.template = _.template($('#table-view').text());
@@ -115,8 +132,23 @@
             event.stopPropagation();
             $(event.target).parent().parent().next('tr.subtable').toggle();
           },
+          sort: function (event) {
+            event.stopPropagation();
+            var index =  $(event.target).parents('th').index(),
+              desc = $(event.target).attr('desc');
+              $(event.target).attr('desc', desc ? '' : 'true').toggleClass('icon-arrow-up').toggleClass('icon-arrow-down');
+             $(event.target).parents('table:eq(0)').find('tbody').append(function () {
+              $(this).find('tr.subtable').remove();
+              return $(this).find('tr').toArray().sort(function (tr1, tr2) {
+                var sort = tr1.children[index].innerText > tr2.children[index].innerText;
+                return desc ? !sort : sort;
+              });
+            });
+          },
           render: function () {
-            this.$el.html(this.template(this.model.toJSON()));
+            this.$el.html(this.template(this.model.toJSON())).
+              find('th a.tip').popover({
+              });
             return this;
           }
         });
@@ -126,9 +158,10 @@
             this.template = _.template($('#chart-view').text());
           },
           render: function () {
-            this.$el.html(this.template()).addClass('span5').find('.chart-container').highcharts({
+            this.$el.html(this.template()).addClass('row-fluid').find('.chart-container').highcharts({
               chart: {
                 type: this.model.get('type'),
+                marginRight: 0
               },
               title: {
                 text: this.model.get('title')
@@ -230,15 +263,23 @@
             'click a.menu': 'onMenuClick'
           },
           render: function () {
-            this.$el.html(this.template(this.model.get('config'))).find('a.dropdown-toggle').dropdown();
+            this.$el.html(this.template(this.model.get('config')));
           },
           onMenuClick: function (event) {
-            var report = new Report({
-              id: event.target.id
-            }), reportView = new ReportView({
-              model: report,
-              el: this.$el.find('#report')
-            });
+            var reportid = $(event.target).attr('reportid'),
+                report = new Report({
+                  id: reportid
+                }),
+                reportView = new ReportView({
+                  model: report,
+                  el: this.$el.find('#report')
+                });
+            $('#tab-container ul').children().removeClass('active');
+            if ($('#tab_'+reportid).length > 0) {
+              $('#tab_'+reportid).addClass('active');
+            } else {
+              $('#tab-container ul').append('<li id="tab_' + reportid+ '"   class="active"><a class="menu" href="###" reportid="'+reportid+'">'+event.target.innerText+'</a></li>');
+            }
             report.load();
           }
         });

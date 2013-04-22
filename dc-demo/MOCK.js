@@ -141,7 +141,9 @@ var MOCK = {
     clumns:[{
       "key": "Date",
       "text": "Date",
-      "subTable": "report_333"
+      "subTable": "report_333",
+      sortable: true,
+      'tip':'lalalal'
     }, {
       "key": "Send Users",
       "text": "Send Users"
@@ -273,7 +275,8 @@ var MOCK = {
     clumns:[{
       key:'Type',
       text: 'Type',
-      "subTable": "report_444"
+      "subTable": "report_444",
+      sortable: true,
     },{
       key: 'Send Users',
       text: 'Send Users'
@@ -471,7 +474,7 @@ var MOCK = {
         id: 222,
         text:'app 2'
       },{
-        id: 111,
+        id: 333,
         text:'app 3'
       }]
     },{
