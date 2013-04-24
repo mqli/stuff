@@ -13,11 +13,58 @@
         <div class="navbar-inner">
           <div class="container-fluid">
             <a class="brand" href="#">DC DEMO</a>
+            <ul class="nav">
+              <li class="dropdown span2">
+                <a class="dropdown-toggle" href="#">Platfrom<b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  <li>
+                    <a>
+                      <label class="checkbox"><input type="checkbox"/>Facebook</label>
+                    </a>
+                  </li>
+                  <li>
+                    <a>
+                      <label class="checkbox"><input type="checkbox"/>Tencent</label>
+                    </a>
+                  </li>
+                </ul>
+              </li>         
+              <li class="dropdown span2">
+                <a class="dropdown-toggle" href="#">Game<b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  <li>
+                    <a>
+                      <label class="checkbox"><input type="checkbox"/>Bobble</label>
+                    </a>
+                  </li>
+                  <li>
+                    <a>
+                      <label class="checkbox"><input type="checkbox"/>Odin</label>
+                    </a>
+                  </li>
+                </ul>
+              </li>
+              <li class="dropdown span2">
+                <a class="dropdown-toggle" href="#">App<b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  <li>
+                    <a>
+                      aaa
+                    </a>
+                  </li>
+                  <li>
+                    <a>
+                      bbb
+                    </a>
+                  </li>
+                </ul>
+              </li>
+            </ul>
           </div>
         </div>
       </div>
       <div  class="row-fluid">
-        <div id="" class="span2">
+        <div id="menu" class="span2">
           <ul class="nav nav-tabs nav-stacked">
             <%_.forEach(menus, function (menu) {%>
               <%if (_.isArray(menu.menus) && menu.menus.length > 0) {%>
@@ -34,10 +81,9 @@
             <%}})%>
           </ul>
         </div>
-        <div id="" class="span10">
+        <div id="main" class="span10">
           <div id="tab-container" class="row-fluid">
             <ul class="nav nav-tabs">
-              
             </ul>
           </div>
           <div id="report" class="row-fluid">
@@ -45,11 +91,15 @@
         </div>
       </div>
     </script>
+    <script id="menu-view" type="text/template">
+    </script>
     <script id="report-view" type="text/template">
-      <div id="filter-container" class="row-fluid form-inline"></div>
+      <div id="filter-container" class="row-fluid btn-toolbar"></div>
       <div class="row-fluid">
         <div class="span12">
-          <div id="chart-container" class="row-fluid"></div>
+          <div class="row-fluid">
+            <div id="chart-container" class="span12" style=""></div>
+          </div>
           <div id="table-container" class="row-fluid"></div>
         </div>
       </div>
@@ -79,7 +129,7 @@
                   <%if (clumn.subTable) {%>
                     <a class="sub-table" subTable="<%=clumn.subTable%>" href="###"><%=record[clumn.key]%></a>
                   <%} else {%>
-                    <%=record[clumn.key]%>
+                    <%=clumn.percent ? record[clumn.key] * 100 +'%' : record[clumn.key]%>
                   <%}%>
                 </td>
               <%})%>
@@ -89,20 +139,23 @@
       </table>
     </script>
     <script id="filter-view" type="text/template">
-      <label>
-        <%=clumn%>
         <%if (type == "radio") {%>
+          <a class="btn btn-primary dropdown-toggle" data-toggle="dropdown" href="#">
+            <%=clumn%>
+            <span class="caret"></span>
+          </a>
+          <ul class="dropdown-menu">
           <%_.forEach(options, function (option) {%>
-            <label class="radio">
-              <input type="radio" name="<%=clumn%>"  value="<%=option.value%>">
-              <%=option.text%>
-            </label>
+            <li>
+              <input type="hidden" name="<%=clumn%>"  value="<%=option.value%>">
+              <a><%=option.text%></a>
+            </li>
           <%})%>
+          </ul>
         <%}%>
-      </label>
     </script>
     <script id="chart-view" type="text/template">
-      <div class="chart-container span12"></div>
+      <div class="chart-container span12" style="width:80%"><div>
     </script>
     <script type="text/javascript" src="MOCK.js"></script>
     <script type="text/javascript">
@@ -119,12 +172,16 @@
           },
           subTable: function (event) {
             var subTable = MOCK[$(event.target).attr('subTable')];
-            new TableView({
-              model: new Backbone.Model({
+            new ReportView({
+              model: new Report({
                 clumns: subTable.clumns,
-                records: subTable.records
+                records: subTable.records,
+                charts: subTable.charts.map(function (chart) {
+                  return new Backbone.Model(chart);
+                }),
+                filters:[]
               })
-            }).render().$el.wrap('<tr class="subtable"><td colspan='+this.model.get('clumns').length+'>').parents('tr').insertAfter($(event.target).parent().parent());
+            }).render().renderTable().$el.wrap('<tr class="subtable"><td colspan='+this.model.get('clumns').length+'>').parents('tr').insertAfter($(event.target).parent().parent());
             $(event.target).removeClass('sub-table').addClass('toggle-table');
             event.stopPropagation();
           },
@@ -158,13 +215,13 @@
             this.template = _.template($('#chart-view').text());
           },
           render: function () {
-            this.$el.html(this.template()).addClass('row-fluid').find('.chart-container').highcharts({
+            this.$el.html(this.template(this.model.toJSON())).addClass('row-fluid').find('.chart-container').highcharts({
               chart: {
                 type: this.model.get('type'),
                 marginRight: 0
               },
               title: {
-                text: this.model.get('title')
+                text: ""//this.model.get('title')
               },
               yAxis:{
                 title: {
@@ -191,7 +248,7 @@
             this.template = _.template($('#filter-view').text());
           },
           render: function () {
-            this.$el.html(this.template(this.model.toJSON()));
+            this.$el.addClass('btn-group').html(this.template(this.model.toJSON()));
             return this;
           }
         });
@@ -199,7 +256,7 @@
           defaults: {
             clumns: [],
             charts: [],
-            records: []
+            records: [],
           },
           initialize: function () {},
           load: function () {
@@ -230,6 +287,7 @@
             }).render().el);
             this.renderChart();
             this.renderFilter();
+            return this;
           },
           renderChart: function () {
             this.model.get('charts').forEach(function (chart) {
@@ -248,6 +306,7 @@
           },
           render: function () {
             this.$el.html(this.template());
+            return this;
           }          
         });
         var App = Backbone.Model.extend({
@@ -264,6 +323,8 @@
           },
           render: function () {
             this.$el.html(this.template(this.model.get('config')));
+            $('.dropdown-toggle').dropdown();
+            return this;
           },
           onMenuClick: function (event) {
             var reportid = $(event.target).attr('reportid'),
@@ -278,7 +339,7 @@
             if ($('#tab_'+reportid).length > 0) {
               $('#tab_'+reportid).addClass('active');
             } else {
-              $('#tab-container ul').append('<li id="tab_' + reportid+ '"   class="active"><a class="menu" href="###" reportid="'+reportid+'">'+event.target.innerText+'</a></li>');
+              $('#tab-container ul').append('<li id="tab_' + reportid+ '" class="active"><a class="menu" href="###" reportid="'+reportid+'">'+event.target.innerText+'</a></li>');
             }
             report.load();
           }
@@ -289,6 +350,14 @@
             el: $(document.body)
           });
         app.set('config', MOCK.config);
+        var Workspace = Backbone.Router.extend({
+          routes: {
+            "report/:id": "search",
+            "report/:query/p:page": "search"
+          },
+          search: function(query, page) {
+          }
+        });
       });
     </script>
   </head>

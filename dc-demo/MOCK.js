@@ -55,7 +55,7 @@ var MOCK = {
       clumns: ['DAU']
     },{
       title: 'Daily New User',
-      type: 'line',
+      type: 'bar',
       xAxis: 'Date',
       clumns: ['DNU'],
       color: '#BF0B23'
@@ -173,7 +173,9 @@ var MOCK = {
       "text": "NU"
     }, {
       "key": "Install Conversion",
-      "text": "Install Conversion"
+      "text": "Install Conversion",
+      "percent": true,
+      "sortable": true
     }],
     charts: [],
     records: [{
@@ -309,7 +311,12 @@ var MOCK = {
       text: 'Install Conversion'
     }],
     filters:[],
-    charts:[],
+    charts:[{
+      title: 'Send Users',
+      type: 'line',
+      xAxis: 'Date',
+      clumns: ['Send Users']
+    }],
     records: [{
       Type:'feed',
       'Send Users': 234486,
