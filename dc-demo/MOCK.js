@@ -471,38 +471,83 @@ var MOCK = {
     }]
   },
   config:{
-    menus:[{
-      id:2222,
-      text:'apps',
-      menus: [{
-        id: 111,
-        text:'app 1'
+    menus:[{ 
+      "data" : "Athena", 
+      "metadata" : { id : 23 },
+      "children" : [{
+        data:'Athena_fb',
+        children: [{
+          data: 'Dashboard',
+          children:[{
+            data: 'Summary',
+            attr: {report:111}
+          },{
+            data: 'Insight',
+            attr: {report:222}
+          },{
+            data: 'Ingame',
+            attr: {report:333}
+          }]
+        }]
+      }, {
+        data:'Athena_tencent',
+        children: [{
+          data: 'Dashboard',
+          children:[{
+            data: 'Summary',
+            attr: {id:111}
+          },{
+            data: 'Insight',
+            attr: {id:222}
+          },{
+            data: 'Ingame',
+            attr: {id:333}
+          }]
+        }]
       },{
-        id: 222,
-        text:'app 2'
+        data:'AthenaAll',
+        attr: {id:111}
       },{
-        id: 333,
-        text:'app 3'
+        data:'AthenaAll',
+        attr: {id:111}
       }]
-    },{
-      id:111,
-      text:'report 1'
-    },{
-      id:222,
-      text:'report 2'
-    },{
-      id:111,
-      text:'report set',
-      menus: [{
-        id: 111,
-        text:'report 1'
-      },{
-        id: 222,
-        text:'report 2'
-      },{
-        id: 333,
-        text:'report 3'
+    },{ 
+      "data" : "Odin", 
+      "metadata" : { id : 23 },
+      "children" : [ {
+        data:'Odin',
+        children: [{
+          data: 'Dashboard',
+          children:[{
+            data: 'Summary'
+          },{
+            data: 'Insight'
+          },{
+            data: 'Ingame'
+          }]
+        }]
+      }, {
+        data:'Odin_tencent',
+        children: [{
+          data: 'Dashboard',
+          children:[{
+            data: 'Summary'
+          },{
+            data: 'Insight'
+          },{
+            data: 'Ingame'
+          }]
+        }]
       }]
-    }]
-  }
+    },{ 
+    data:'Dashboard',
+    children: [{
+        data: 'Summary'
+      },{
+        data: 'Insight'
+      },{
+        data: 'Ingame'
+      }]
+    }
+  ]}
 };
