@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>DC demo</title>
+    <link href="lib/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <script src="lib/jquery-1.9.1.min.js"></script>
+    <script src="lib/jquery.jstree.js"></script>
+    <script src="lib/underscore-min.js"></script>
+    <script src="lib/backbone-min.js"></script>
+    <script src="lib/bootstrap/js/bootstrap.min.js"></script>
+    <script src="lib/highcharts.js"></script>
+    <script src="js/table.js"></script>
+    <script src="js/chart.js"></script>
+    <script src="js/report.js"></script>
+    <script src="js/app.js"></script>
+    <script id="app-view" type="text/template">
+      <!--header-->
+      <div class="navbar navbar-inverse navbar-fixed-top">
+        <div class="navbar-inner">
+          <div class="container-fluid">
+            <a class="brand" href="#">DC DEMO</a>
+          </div>
+        </div>
+      </div>
+      <!--outter container-->
+      <div class="container-fluid">
+        <div  class="row-fluid">
+          <!--menu tree container-->
+          <div id="menu" class="span2">
+          </div>
+          <div id="main" class="span10">
+            <!--tab container-->
+            <div id="tab-container" class="row-fluid">
+              <ul class="nav nav-tabs">
+              </ul>
+            </div>
+            <!--report container-->
+            <div id="report" class="row-fluid">
+            </div>
+          </div>
+        </div>
+      </div>
+    </script>
+    <script id="menu-view" type="text/template">
+    </script>
+    <script id="report-view" type="text/template">
+      <!--filters-->
+      <div id="" class="row-fluid btn-toolbar filter-container"></div>
+      <!--charts and table-->
+      <div class="row-fluid">
+        <div class="span12">
+          <div class="row-fluid">
+            <div id="" class="span12" style="">
+              <div class="accordion chart">
+              </div>
+            </div>
+          </div>
+          <div id="" class="table-container row-fluid"></div>
+        </div>
+      </div>
+    </script>
+    <script id="table-view" type="text/template">
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <%_.forEach(clumns, function (clumn) {%>
+              <th>
+                <%=clumn.text%>
+                <%if (!_.isEmpty(clumn.tip)) {%>
+                  <a href="###" data-placement="bottom" data-title="<%=clumn.text%>" data-content="<%=clumn.tip%>" class="tip icon-question-sign pull-right"></a>
+                <%}%>
+                <%if (clumn.sortable) {%>
+                  <a href="###" sortBy="<%=clumn.key%>" class="sortable icon-arrow-up pull-right"></a>
+                <%}%>
+              </th>
+            <%})%>
+          </tr>
+        </thead>
+        <tbody>
+          <%_.forEach(records, function (record) {%>
+            <tr>
+              <%_.forEach(clumns, function (clumn) {%>
+                <td>
+                  <%if (clumn.subTable) {%>
+                    <a class="sub-table" subTable="<%=clumn.subTable%>" href="###"><%=record[clumn.key]%></a>
+                  <%} else {%>
+                    <%=clumn.percent ? record[clumn.key] * 100 +'%' : record[clumn.key]%>
+                  <%}%>
+                </td>
+              <%})%>
+            </tr>
+          <%})%>
+        </tbody>
+      </table>
+    </script>
+    <script id="filter-view" type="text/template">
+      <%if (type == "radio") {%>
+        <a class="btn btn-primary dropdown-toggle" data-toggle="dropdown" href="#">
+          <%=clumn%>
+          <span class="caret"></span>
+        </a>
+        <ul class="dropdown-menu">
+        <%_.forEach(options, function (option) {%>
+          <li>
+            <input type="hidden" name="<%=clumn%>"  value="<%=option.value%>">
+            <a><%=option.text%></a>
+          </li>
+        <%})%>
+        </ul>
+      <%}%>
+    </script>
+    <script id="chart-view" type="text/template">
+      <div class="accordion-group">
+        <div class="accordion-heading">
+          <a class="accordion-toggle" data-toggle="collapse" data-target="#chart_<%=id%>">
+            <%=title%>
+          </a>
+        </div>
+        <div id="chart_<%=id%>" class="accordion-body collapse in">
+          <div class="accordion-inner">
+            <div class="chart-container span12" style="width:80%"></div>
+          </div>
+        </div>
+      </div>
+    </script>
+    <script type="text/javascript" src="MOCK.js"></script>
+    <script type="text/javascript">
+      $(function () {
+        var app = new App(),
+          appView = new AppView({
+            model:app,
+            el: $(document.body)
+          });
+        app.set('config', MOCK.config);
+      });
+    </script>
+  </head>
+  <body style='padding-top: 45px;'></body>
+</html>

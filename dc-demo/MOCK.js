@@ -49,23 +49,27 @@ var MOCK = {
       ]
     }],
     charts:[{
+      id:'111',
       title: 'Daily Active User',
       type: 'line',
       xAxis: 'Date',
       clumns: ['DAU']
     },{
+      id:'1111',
       title: 'Daily New User',
       type: 'bar',
       xAxis: 'Date',
       clumns: ['DNU'],
       color: '#BF0B23'
     },{
+      id:'1131',
       title: 'Revenue',
       type: 'line',
       xAxis: 'Date',
       clumns: ['IAP(USD)'],
       color: '#BF0B23'
     },{
+      id:'222',
       title: 'Retention',
       type: 'line',
       xAxis: 'Date',
