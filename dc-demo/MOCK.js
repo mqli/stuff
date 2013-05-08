@@ -53,7 +53,7 @@ var MOCK = {
       title: 'Daily Active User',
       type: 'line',
       xAxis: 'Date',
-      clumns: ['DAU']
+      clumns: ['DAU','DNU']
     },{
       id:'1111',
       title: 'Daily New User',
