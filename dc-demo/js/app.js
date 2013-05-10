@@ -15,7 +15,7 @@ $(function () {
       this.$el.html(this.template(this.model.get('config')));
       $("#menu").jstree({ 
         "json_data" : {
-          "data" : MOCK.config.menus
+          "data" : MOCK.config.menus.map(this.parseTree, this)
         },
         "themes":{
           "theme":"apple"
@@ -24,29 +24,50 @@ $(function () {
       }).bind("select_node.jstree", _.bind(this.onMenuClick, this));
       return this;
     },
-    onTabClick: function (event) {
-      $(event.currentTarget).addClass('active').siblings().removeClass('active');
-      $('#report_' + $(event.target).attr('reportid')).show().siblings().hide();
+    parseTree: function (node) {
+      node.metadata = node.data || {};
+      node.data = node.text;
+      if (node.isLeaf) {//子节不显示在树而显示在页签
+        node.metadata.children = node.children;
+        delete node.children;
+        return node;
+      }
+      node.children && node.children.forEach(function (child) {
+        this.parseTree(child);
+      }, this);
+      return node;
     },
-    onMenuClick: function (event,data) {
-      var reportid = data.rslt.obj.attr('report');
-      if (!reportid) return;
+    onTabClick: function (event) {
+      var reportid = $(event.currentTarget).attr('reportid');
+      $(event.currentTarget).addClass('active').siblings().removeClass('active');
+      $('#report>div').hide();
+      if ($('#report_'+reportid).length) {
+        return $('#report_'+reportid).show();
+      }
       $('<div id="report_'+reportid+'">').appendTo('#report').siblings().hide();
       var report = new Report({
-            id: reportid
-          }),
-          reportView = new ReportView({
-            model: report,
-            el: this.$el.find('#report_' + reportid)
-          });
-      $('#tab-container ul').children().removeClass('active');
-      if ($('#tab_'+reportid).length > 0) {
-        $('#tab_'+reportid).addClass('active');
-        $('#report_' + reportid).show().siblings().hide();
-      } else {
-        $('#tab-container ul').append('<li id="tab_' + reportid+ '" class="tab active"><a class="menu" href="###" reportid="'+reportid+'">'+data.rslt.obj.text()+'</a></li>');
+        id: reportid
+      }),
+      reportView = new ReportView({
+        model: report,
+        el: this.$el.find('#report_' + reportid)
+      });
+     report.load();
+    },
+    onMenuClick: function (event, data) {
+      var data = data.rslt.obj.data();
+      if (data.children && data.children.length) {
+        $('#tab-container ul').html(function () {
+          return data.children.map(function (node) {
+            return '<li id="tab_' + node.data.report+ '" reportid="'+node.data.report+'" class="tab active">'+
+              '<a class="menu" href="###">'
+                  + node.text +
+              '</a>'+
+            '</li>'
+          }).join('');
+        }).find('li:first').click();
       }
-      report.load();
+      return ;
     }
   });
 });

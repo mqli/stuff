@@ -29,23 +29,23 @@ var MOCK = {
       clumn: 'date',
       type: 'radio',
       options: [
-        {text:'all', value: ''},
-        {text:'1 week', value: ''},
-        {text:'2 week', value: ''}
+        {text:'all', value: '1'},
+        {text:'1 week', value: '2'},
+        {text:'2 week', value: '3'}
       ]
     },{
       clumn: 'region',
       type: 'radio',
       options: [
-        {text:'en_us', value: ''},
-        {text:'zh_cn', value: ''}
+        {text:'en_us', value: '2'},
+        {text:'zh_cn', value: '3'}
       ]
     },{
       clumn: 'equipment',
       type: 'radio',
       options: [
-        {text:'iphone', value: ''},
-        {text:'ipad', value: ''}
+        {text:'iphone', value: '1'},
+        {text:'ipad', value: '2'}
       ]
     }],
     charts:[{
@@ -316,6 +316,7 @@ var MOCK = {
     }],
     filters:[],
     charts:[{
+      id: 123123,
       title: 'Send Users',
       type: 'line',
       xAxis: 'Date',
@@ -476,81 +477,23 @@ var MOCK = {
   },
   config:{
     menus:[{ 
-      "data" : "Athena", 
-      "metadata" : { id : 23 },
-      "children" : [{
-        data:'Athena_fb',
+      text : "Athena", 
+      children : [{
+        text:'Athena_fb',
         children: [{
-          data: 'Dashboard',
+          text: 'Dashboard',
+          isLeaf: true,
           children:[{
-            data: 'Summary',
-            attr: {report:111}
+            text: 'Summary',
+            data: {report:111}
           },{
-            data: 'Insight',
-            attr: {report:222}
+            text: 'Insight',
+            data: {report:222}
           },{
-            data: 'Ingame',
-            attr: {report:333}
+            text: 'Ingame',
+            data: {report:333}
           }]
         }]
-      }, {
-        data:'Athena_tencent',
-        children: [{
-          data: 'Dashboard',
-          children:[{
-            data: 'Summary',
-            attr: {id:111}
-          },{
-            data: 'Insight',
-            attr: {id:222}
-          },{
-            data: 'Ingame',
-            attr: {id:333}
-          }]
-        }]
-      },{
-        data:'AthenaAll',
-        attr: {id:111}
-      },{
-        data:'AthenaAll',
-        attr: {id:111}
-      }]
-    },{ 
-      "data" : "Odin", 
-      "metadata" : { id : 23 },
-      "children" : [ {
-        data:'Odin',
-        children: [{
-          data: 'Dashboard',
-          children:[{
-            data: 'Summary'
-          },{
-            data: 'Insight'
-          },{
-            data: 'Ingame'
-          }]
-        }]
-      }, {
-        data:'Odin_tencent',
-        children: [{
-          data: 'Dashboard',
-          children:[{
-            data: 'Summary'
-          },{
-            data: 'Insight'
-          },{
-            data: 'Ingame'
-          }]
-        }]
-      }]
-    },{ 
-    data:'Dashboard',
-    children: [{
-        data: 'Summary'
-      },{
-        data: 'Insight'
-      },{
-        data: 'Ingame'
       }]
     }
   ]}

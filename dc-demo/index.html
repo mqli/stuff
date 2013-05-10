@@ -96,14 +96,13 @@
     <script id="filter-view" type="text/template">
       <%if (type == "radio") {%>
         <a class="btn btn-primary dropdown-toggle" data-toggle="dropdown" href="#">
-          <%=clumn%>
+          <span class="text"><%=clumn%></span> 
           <span class="caret"></span>
         </a>
         <ul class="dropdown-menu">
         <%_.forEach(options, function (option) {%>
           <li>
-            <input type="hidden" name="<%=clumn%>"  value="<%=option.value%>">
-            <a><%=option.text%></a>
+            <a class="filter-value" value="<%=option.value%>"><%=option.text%></a>
           </li>
         <%})%>
         </ul>
