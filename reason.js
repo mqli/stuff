@@ -17,7 +17,7 @@
     start = start || 0;
     step = step || 1;
     return function () {
-      return start += isFunction(step) ? step() : isFunction;
+      return start += isFunction(step) ? step() : step;
     };
   };
   reason.float = function (min, max, fix) {
